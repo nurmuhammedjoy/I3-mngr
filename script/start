@@ -1,0 +1,105 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+LOGFILE="$HOME/.i3wm-session.log"
+exec > >(tee -a "$LOGFILE") 2>&1
+
+DEBUG=0
+AUTO_INSTALL=0
+
+for arg in "$@"; do
+    case "$arg" in
+        --debug) DEBUG=1 ;;
+        --auto-install) AUTO_INSTALL=1 ;;
+    esac
+done
+
+timestamp() { date +"[%Y-%m-%d %H:%M:%S]"; }
+
+log() {
+    echo "$(timestamp) $1"
+}
+
+debug() {
+    [ "$DEBUG" -eq 1 ] && log "[DEBUG] $1"
+}
+
+fatal() {
+    log "[FATAL] $1"
+    exit 1
+}
+
+# Check & Optionally Install Dependencies
+check_or_install() {
+    local pkg="$1"
+    if ! command -v "$pkg" >/dev/null 2>&1; then
+        log "[WARN] Missing dependency: $pkg"
+        if [ "$AUTO_INSTALL" -eq 1 ]; then
+            log "→ Installing $pkg..."
+            pkg install -y "$pkg" || fatal "Failed to install $pkg"
+        else
+            fatal "Dependency '$pkg' is missing. Use --auto-install to install automatically."
+        fi
+    else
+        debug "$pkg is present."
+    fi
+}
+
+# Check all required tools
+for dep in pulseaudio termux-x11 i3 am; do
+    check_or_install "$dep"
+done
+
+
+pkill -f "termux.x11" 2>/dev/null
+
+# Start PulseAudio
+log "Starting PulseAudio..."
+pulseaudio --start --load="module-native-protocol-tcp auth-ip-acl=127.0.0.1 auth-anonymous=1" --exit-idle-time=-1
+
+# Wait for PulseAudio to be ready
+for i in {1..5}; do
+    if pactl info >/dev/null 2>&1; then
+        debug "PulseAudio ready."
+        break
+    fi
+    sleep 1
+done
+
+# Set Environment Variables
+export XDG_RUNTIME_DIR="${TMPDIR:-/data/data/com.termux/files/usr/tmp}"
+export PULSE_SERVER=127.0.0.1
+
+# === Launch Termux-X11 GUI (App Layer) ===
+log "Launching Termux-X11 GUI..."
+am start --user 0 -n com.termux.x11/com.termux.x11.MainActivity >/dev/null 2>&1
+sleep 1
+
+# Start X11 Server
+log "Starting Termux-X11 server..."
+termux-x11 :0 >/dev/null 2>&1 &
+X11_PID=$!
+
+
+for i in {1..10}; do
+    [ -S "$XDG_RUNTIME_DIR/X11-unix/X0" ] && break
+    sleep 1
+done
+
+# Re-check
+if ! dumpsys window 2>/dev/null | grep -q "com.termux.x11"; then
+    log "Re-launching Termux-X11 GUI (wasn't visible)..."
+    am start --user 0 -n com.termux.x11/com.termux.x11.MainActivity >/dev/null 2>&1
+    sleep 1
+fi
+
+log "Launching i3 window manager..."
+env DISPLAY=:0 dbus-launch --exit-with-session i3 >/dev/null 2>&1 &
+I3_PID=$!
+
+log "i3 session launched. PID=$I3_PID"
+
+
+trap 'log "Exiting... Cleaning up."; kill $X11_PID $I3_PID 2>/dev/null; exit' INT TERM
+wait $I3_PID
+log "i3 session exited."
+exit 0
