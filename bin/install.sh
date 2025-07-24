@@ -36,7 +36,7 @@ install_packages() {
 
     case "$manager" in
         termux)
-            # Show only what matters — suppress unnecessary noise
+          
             echo "[info] Enabling x11-repo..."
             yes | pkg install -y x11-repo >/dev/null 2>&1
 
