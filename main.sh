@@ -1,17 +1,15 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# i3wm Manager for Termux - Main Script
-# Modern TUI-based installer and configuration manager
 
 set -euo pipefail
 
-# Constants
+
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly CONFIG_DIR="$HOME/.config/i3"
 readonly CACHE_DIR="$HOME/.cache/i3wm-tool"
 readonly LOG_FILE="$CACHE_DIR/i3wm-tool.log"
 
-# Colors and formatting
+
 readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
 readonly YELLOW='\033[1;33m'
@@ -21,10 +19,10 @@ readonly CYAN='\033[0;36m'
 readonly WHITE='\033[1;37m'
 readonly BOLD='\033[1m'
 readonly DIM='\033[2m'
-readonly NC='\033[0m' # No Color
+readonly NC='\033[0m' 
 readonly RESET='\033[0m'
 
-# Unicode symbols
+
 readonly CHECK=""
 readonly CROSS=""
 readonly ARROW=""
@@ -37,28 +35,25 @@ readonly CONFIG=""
 
 source "$SCRIPT_DIR/bin/utils.sh"
 
-# Initialize directories and logging
 init_environment() {
     mkdir -p "$CACHE_DIR" "$CONFIG_DIR"
     touch "$LOG_FILE"
     
-    # Set proper permissions
     chmod 755 "$SCRIPT_DIR/bin"/*.sh 2>/dev/null || true
 }
 
-# Enhanced terminal capabilities detection
 detect_terminal_caps() {
     TERM_WIDTH=$(tput cols 2>/dev/null || echo 80)
     TERM_HEIGHT=$(tput lines 2>/dev/null || echo 24)
     
-    # Check for color support
+    
     if [[ -t 1 ]] && command -v tput >/dev/null 2>&1; then
         COLOR_SUPPORT=$(tput colors 2>/dev/null || echo 0)
     else
         COLOR_SUPPORT=0
     fi
     
-    # Adjust for smaller terminals
+    
     if [[ $TERM_WIDTH -lt 60 ]]; then
         COMPACT_MODE=true
     else
@@ -126,7 +121,7 @@ show_menu() {
     printf "${BOLD}Enter your choice [0-8]: ${NC}"
 }
 
-# Status indicator with animation
+
 show_status() {
     local status="$1"
     local message="$2"
@@ -151,7 +146,7 @@ show_status() {
     esac
 }
 
-# Progress bar with modern styling
+
 show_progress() {
     local current="$1"
     local total="$2"
