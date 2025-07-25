@@ -1,0 +1,43 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+SOURCE="$HOME/tui/script/start"
+TARGET="$HOME/start"
+ALIAS_LINE="alias starti3='./start'"
+
+# Step 1: Copy the file
+if [ -f "$SOURCE" ]; then
+    cp "$SOURCE" "$TARGET"
+    echo "[+] Copied 'start' script to home directory."
+else
+    echo "[!] Source file not found: $SOURCE"
+    exit 1
+fi
+
+# Step 2: Make it executable
+chmod +x "$TARGET"
+echo "[+] Made 'start' executable."
+
+# Step 3: Add alias to .zshrc or .bashrc
+if [ -f "$HOME/.zshrc" ]; then
+    RCFILE="$HOME/.zshrc"
+elif [ -f "$HOME/.bashrc" ]; then
+    RCFILE="$HOME/.bashrc"
+else
+    RCFILE="$HOME/.bashrc"
+    touch "$RCFILE"
+fi
+
+# Prevent duplicate alias entries
+if ! grep -Fxq "$ALIAS_LINE" "$RCFILE"; then
+    echo "$ALIAS_LINE" >> "$RCFILE"
+    echo "[+] Alias added to $RCFILE"
+else
+    echo "[i] Alias already exists in $RCFILE"
+fi
+
+# Step 4: Final message with padding
+PADDING=" " # 5 spaces on left/right
+MESSAGE="󱦟 i3 has been installed. You can start it by typing starti3"
+
+echo
+echo -e "${PADDING}\033[1;32m$MESSAGE\033[0m${PADDING}"
