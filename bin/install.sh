@@ -45,6 +45,9 @@ install_packages() {
                 echo "    - $pkg"
                 yes | pkg install -y "$pkg" >/dev/null 2>&1
             done
+            echo "[info] Running initialise script..."
+            bash "$SCRIPT_DIR/script/initialise"
+
             ;;
         apt)
             sudo apt update -qq
