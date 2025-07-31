@@ -97,9 +97,9 @@ $mod + r
 
 ## 🔁 Session Control
 
-| Shortcut           | Action        |
-| ------------------ | ------------- |
-| `$mod + Shift + z` | Reload config |
-| `$mod + Shift + r` | Restart i3    |
+| Shortcut           | Action             |
+| ------------------ | -------------      |
+| `$mod + Shift + z` | Reload config      |
+| `$mod + Shift + r` | Restart i3         |
 
 ---
