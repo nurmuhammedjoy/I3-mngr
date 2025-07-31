@@ -1,6 +1,6 @@
 
 
-## 🧠 Mod Key
+## Mod Key
 
 The `$mod` key is set to `Mod1` (usually **Alt**).
 You can change this in your config by editing:
@@ -28,7 +28,7 @@ set $mod Mod1
 
 ---
 
-## 🔳 Layout Control
+## Layout Control
 
 | Shortcut               | Action                 |
 | ---------------------- | ---------------------- |
@@ -43,7 +43,7 @@ set $mod Mod1
 
 ---
 
-## 📐 Resize Mode
+## Resize Mode
 
 | Shortcut (in resize mode)    | Action           |
 | ---------------------------- | ---------------- |
@@ -61,7 +61,7 @@ $mod + r
 
 ---
 
-## 🗂 Workspace Navigation
+## Workspace Navigation
 
 | Shortcut               | Action                        |
 | ---------------------- | ----------------------------- |
@@ -70,7 +70,7 @@ $mod + r
 
 ---
 
-## 📦 Application Launch
+## Application Launch
 
 | Shortcut       | Action                             |
 | -------------- | ---------------------------------- |
@@ -81,7 +81,7 @@ $mod + r
 
 ---
 
-## 🎵 Media Controls (via `mpc` + MPD)
+## Media Controls (via `mpc` + MPD)
 
 | Shortcut           | Action            |
 | ------------------ | ----------------- |
